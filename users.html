@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007938;
+            color: #fff;
+        }
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+ nav {
+            background-color: #009e4d;
+            color: #fff;
+            padding: 20px 0;
+            width: 220px;
+            float: left;
+            height: 100vh;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            text-align: left;
+            padding: 15px 20px;
+            border-bottom: 1px solid #007938;
+            margin-left: 20px; /
+        }
+        nav ul li ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            margin-left: 20px;
+            display: none; 
+        }
+        nav ul li:hover > ul {
+            display: block; 
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        nav ul li a:hover {
+            background-color: #007938;
+            padding-left: 10px;
+        }
+        nav ul li.food-list > a::after {
+            content: ' ▼'; 
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+    
+        header {
+            background-color: #00bf63;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+      
+
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+        .footer {
+            background-color: #00bf63;
+            color: #fff;
+            padding: 10px 0;
+            clear: both;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Users List</h1>
+    </header>
+      <nav>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="users.html">Users</a></li>
+            <li class="food-list">
+                <a href="#">Food List</a>
+                <ul>
+                    <li><a href="create_menu.html" onclick="toggleMenu('menu1')">Create Menu</a></li>
+                    <li><a href="view_menu.html" onclick="toggleMenu('menu2')">View Menu</a></li>
+                </ul>
+            </li>
+              <li><a href="order.html">Orders</a></li>
+            <li><a href="login.html">Logout</a></li>
+        </ul>
+    </nav>
+    <div class="content">
+
+      
+ <h1>Users Table</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Email</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            
+        </tbody>
+    </table>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js';
+
+        
+          const firebaseConfig ={
+  apiKey: "AIzaSyDGB7dre8pvLKCDqROjfsPsxQ6Cz_Yy2VA",
+  authDomain: "pureplate-96ab5.firebaseapp.com",
+  databaseURL: "https://pureplate-96ab5-default-rtdb.firebaseio.com",
+  projectId: "pureplate-96ab5",
+  storageBucket: "pureplate-96ab5.appspot.com",
+  messagingSenderId: "1093065034241",
+  appId: "1:1093065034241:web:d0b6572d231b623f9b4e00",
+  measurementId: "G-TM2DQRR5TC"
+};
+   const app = initializeApp(firebaseConfig);
+
+       
+        const database = getDatabase();
+
+        
+        function displayUsers() {
+            const tableBody = document.getElementById('userTableBody');
+            tableBody.innerHTML = ''; 
+
+            const usersRef = ref(database, 'Users');
+            get(usersRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    for (const userId in userData) {
+                        const userDataItem = userData[userId];
+                        const row = `
+                            <tr>
+                                <td>${userId}</td>
+                                <td>${userDataItem.name}</td>
+                                <td>${userDataItem.surname}</td>
+                                <td>${userDataItem.email}</td>
+                                <td>${userDataItem.phone}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    }
+                }
+            }).catch((error) => {
+                console.error('Error getting data:', error);
+            });
+        }
+
+        
+        window.onload = function() {
+            displayUsers();
+        };
+    </script>
+
+
+    </div>
+    <div class="footer">
+        <p>&copy; 2024 Admin Dashboard</p>
+    </div>
+</body>
+</html>

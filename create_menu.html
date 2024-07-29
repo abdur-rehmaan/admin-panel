@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+   <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        header {
+            background-color: #00bf63;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+        nav {
+            background-color: #009e4d;
+            color: #fff;
+            padding: 20px 0;
+            width: 220px;
+            float: left;
+            height: 100vh;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            text-align: left;
+            padding: 15px 20px;
+            border-bottom: 1px solid #007938;
+            margin-left: 20px; 
+        }
+        nav ul li ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            margin-left: 20px;
+            display: none; 
+        }
+        nav ul li:hover > ul {
+            display: block;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        nav ul li a:hover {
+            background-color: #007938;
+            padding-left: 10px;
+        }
+        nav ul li.food-list > a::after {
+            content: ' ▼'; 
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .content {
+            margin-left: 240px;
+            padding: 20px;
+        }
+         .content_main {
+            margin-left: 200px;
+            padding: 10px;
+        }
+        .footer {
+            background-color: #00bf63;
+            color: #fff;
+            padding: 10px 0;
+            clear: both;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-input {
+            margin-right: 10px;
+            
+        }
+        .checkbox-text {
+            font-size: 16px;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border 0.3s ease;
+        }
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #00bf63;
+        }
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .checkbox-container.two-checkboxes {
+            justify-content: space-between;
+        }
+        .checkbox-container.two-checkboxes .checkbox-item {
+            width: calc(50% - 5px);
+        }
+        .menu-item {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+        .hidden {
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        table th, table td {
+            padding: 12px;
+            background-color: #f8f8f8;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        table th {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Menu</h1>
+</header>
+     <nav>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="users.html">Users</a></li>
+            <li class="food-list">
+                <a href="#">Food List</a>
+                <ul>
+                    <li><a href="create_menu.html" onclick="toggleMenu('menu1')">Create Menu</a></li>
+                    <li><a href="view_menu.html" onclick="toggleMenu('menu2')">View Menu</a></li>
+                </ul>
+            </li>
+              <li><a href="order.html">Orders</a></li>
+            <li><a href="login.html">Logout</a></li>
+        </ul>
+    </nav>
+
+
+<div class="content">
+    <div class="container" id="menu1">
+        <h2>Food and Disease Form</h2>
+   <form id="foodForm">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required><br><br>
+
+            <label>Time:</label><br>
+            <input type="radio" id="breakfast" name="time" value="Breakfast" required>
+            <label for="breakfast">Breakfast</label>
+            <input type="radio" id="lunch" name="time" value="Lunch">
+            <label for="lunch">Lunch</label>
+            <input type="radio" id="dinner" name="time" value="Dinner">
+            <label for="dinner">Dinner</label><br><br>
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" min="0" required><br><br>
+
+            <label for="description">Description:</label><br>
+            <textarea id="description" name="description" required></textarea><br><br>
+
+            <label for="calories">Calories:</label>
+            <input type="number" id="calories" name="calories" min="0"><br><br>
+
+            <label>Weight:</label><br>
+            <input type="radio" id="gain" name="weight" value="Gain" required>
+            <label for="gain">Gain</label>
+            <input type="radio" id="loss" name="weight" value="Loss">
+            <label for="loss">Loss</label><br><br>
+
+            <label>Disease:</label><br>
+            <input type="checkbox" id="blood-pressure" name="disease" value="Blood-pressure">
+            <label for="blood-pressure">Blood Pressure</label>
+       
+
+
+         <input type="checkbox" id="diabetes" name="disease" value="Diabetes">
+            <label for="diabetes">Diabetes</label>
+
+
+            <input type="checkbox" id="cholesterol" name="disease" value="Cholesterol">
+            <label for="cholesterol">cholesterol</label>
+
+
+            
+            <input type="checkbox" id="heart-disorder" name="disease" value="Heart-disorder">
+            <label for="heart-disorder">Heart Disorder</label><br><br>
+      
+
+
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required><br><br>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+   
+
+   
+</div>
+
+<div class="footer">
+    <p>&copy; 2024 Admin Dashboard</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+
+<script>
+   
+    const firebaseConfig = {
+  apiKey: "AIzaSyDGB7dre8pvLKCDqROjfsPsxQ6Cz_Yy2VA",
+  authDomain: "pureplate-96ab5.firebaseapp.com",
+  databaseURL: "https://pureplate-96ab5-default-rtdb.firebaseio.com",
+  projectId: "pureplate-96ab5",
+  storageBucket: "pureplate-96ab5.appspot.com",
+  messagingSenderId: "1093065034241",
+  appId: "1:1093065034241:web:d0b6572d231b623f9b4e00",
+  measurementId: "G-TM2DQRR5TC"
+}; 
+
+    const app = firebase.initializeApp(firebaseConfig);
+
+    
+    const database = firebase.database();
+
+   
+    document.getElementById('foodForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+       
+        const title = document.getElementById('title').value;
+        const time = document.querySelector('input[name="time"]:checked').value;
+        const price = document.getElementById('price').value;
+        const description = document.getElementById('description').value;
+        const calories = document.getElementById('calories').value;
+        const weight = document.querySelector('input[name="weight"]:checked').value;
+        const diseases = [...document.querySelectorAll('input[name="disease"]:checked')].map(el => el.value);
+        const imageFile = document.getElementById('image').files[0];
+
+        if (!title || !time || !price || !description || !weight || !imageFile) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        
+      const storageRef = firebase.storage().ref('images/' + imageFile.name);
+    const uploadTask = storageRef.put(imageFile);
+uploadTask.on('state_changed', 
+        null, 
+        error => {
+            console.error('Error uploading image:', error);
+            alert('An error occurred while uploading the image. Please try again later.');
+        }, 
+        () => {
+            
+            uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+                
+                const foodRef = database.ref('meal_box').push();
+                foodRef.set({
+                    title,
+                    time,
+                    price,
+                    description,
+                    calories,
+                    weight,
+                    diseases,
+                    imageURL: downloadURL 
+                }).then(() => {
+                    
+                    document.getElementById('foodForm').reset();
+                    
+                    alert("Form submitted successfully!");
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving the data. Please try again later.');
+                });
+            });
+        }
+    );
+});
+</script>
+
+
+
+<script>
+    function toggleMenu(menuId) {
+        
+        var menus = document.querySelectorAll('.content > .container');
+        menus.forEach(function(menu) {
+            menu.classList.add('hidden');
+        });
+       
+        var selectedMenu = document.getElementById(menuId);
+        selectedMenu.classList.remove('hidden');
+    }
+</script>
+<div class="footer">
+    <p>&copy; 2024 Admin Dashboard</p>
+</div>
+</body>
+</html>

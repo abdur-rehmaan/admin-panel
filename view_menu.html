@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Box Data</title>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js"></script>
+
+   <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        header {
+            background-color: #00bf63;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+        nav {
+            background-color: #009e4d;
+            color: #fff;
+            padding: 20px 0;
+            width: 220px;
+            float: left;
+            height: 100vh;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            text-align: left;
+            padding: 15px 20px;
+            border-bottom: 1px solid #007938;
+            margin-left: 20px;
+        }
+        nav ul li ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            margin-left: 20px;
+            display: none;
+        }
+        nav ul li:hover > ul {
+            display: block;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        nav ul li a:hover {
+            background-color: #007938;
+            padding-left: 10px;
+        }
+        nav ul li.food-list > a::after {
+            content: ' ▼';
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .content {
+            margin-left: 240px;
+            padding: 20px;
+        }
+        .content_main {
+            margin-left: 200px;
+            padding: 10px;
+        }
+        .footer {
+            background-color: #00bf63;
+            color: #fff;
+            padding: 10px 0;
+            clear: both;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        table th, table td {
+            padding: 12px;
+            background-color: #f8f8f8;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        table th {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .dialog form {
+            max-width: 400px;
+            margin: 0 auto;
+            gap: 10px;
+        }
+        .dialog form label {
+            font-weight: bold;
+        }
+        .dialog form input[type="text"],
+        .dialog form textarea,
+        .dialog form select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .dialog form button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .dialog form button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .dialog-content #editForm{
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+        }
+       
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Menu</h1>
+</header>
+    <nav>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="users.html">Users</a></li>
+            <li class="food-list">
+                <a href="#">Food List</a>
+                <ul>
+                    <li><a href="create_menu.html" onclick="toggleMenu('menu1')">Create Menu</a></li>
+                    <li><a href="view_menu.html" onclick="toggleMenu('menu2')">View Menu</a></li>
+                </ul>
+            </li>
+              <li><a href="order.html">Orders</a></li>
+            <li><a href="login.html">Logout</a></li>
+        </ul>
+    </nav>
+
+<div class="content">
+    <div class="container" id="menu1">
+    <h1>Meal Box Data</h1>
+
+    <table id="mealBoxTable">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Time</th>
+                <th>Price</th>
+                <th>Calories</th>
+                <th>Description</th>
+                <th>Weight</th>
+                <th>Diseases</th>
+                   <th>Images</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="mealBoxTableBody">
+
+        </tbody>
+    </table>
+</div>
+</div>
+
+    
+ <div id="editDialog" class="dialog" style="display: none;">
+    <div class="dialog-content">
+        <span class="close" onclick="closeEditDialog()">&times;</span>
+        <form id="editForm" style="width: fit-content;">
+            <label for="editTitle">Title:</label>
+            <input type="text" id="editTitle" name="title" required>
+
+
+
+            <label for="editTime">Time:</label><br>
+            <input type="radio" id="breakfast" name="editTime" value="Breakfast" required>
+            <label for="breakfast">Breakfast</label>
+            <input type="radio" id="lunch" name="editTime" value="Lunch">
+            <label for="lunch">Lunch</label>
+            <input type="radio" id="dinner" name="editTime" value="Dinner">
+            <label for="dinner">Dinner</label><br><br>
+
+
+
+            <label for="editPrice">Price:</label>
+            <input type="text" id="editPrice" name="price" required>
+
+            <label for="editCalories">Calories:</label>
+            <input type="text" id="editCalories" name="calories">
+
+            <label for="editDescription">Description:</label>
+            <textarea id="editDescription" name="description"></textarea>
+
+
+            <div style="margin: 20px auto;">
+            <label for="editWeight" >Weight:</label><br>
+            <input type="radio" id="gain" name="editWeight" value="Gain" required>
+            <label for="gain">Gain</label>
+            <input type="radio" id="loss" name="editWeight" value="Loss">
+            <label for="loss">Loss</label><br><br>
+            </div>
+
+
+            <div style="margin: 20px auto;">
+                <label for="editDiseases">Diseases:</label><br>
+                <input type="checkbox" id="blood-pressure" name="editDiseases" value="Blood-pressure">
+                <label for="blood-pressure">Blood Pressure</label>
+              
+                <input type="checkbox" id="diabetes" name="editDiseases" value="Diabetes">
+                <label for="diabetes">Diabetes</label>
+    
+                <input type="checkbox" id="cholesterol" name="editDiseases" value="Cholesterol">
+                <label for="cholesterol">cholesterol</label>
+                
+                <input type="checkbox" id="heart-disorder" name="editDiseases" value="Heart-disorder">
+                <label for="heart-disorder">Heart Disorder</label><br><br>
+            </div>
+
+            <label for="editImage">Image:</label>
+            <input type="file" id="editImage" name="editImage">
+
+            <button type="submit">Save</button>
+        </form>
+    </div>
+</div>
+
+
+    
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-storage-compat.js"></script>
+
+
+    
+ <script>
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyDGB7dre8pvLKCDqROjfsPsxQ6Cz_Yy2VA",
+        authDomain: "pureplate-96ab5.firebaseapp.com",
+        databaseURL: "https://pureplate-96ab5-default-rtdb.firebaseio.com",
+        projectId: "pureplate-96ab5",
+        storageBucket: "pureplate-96ab5.appspot.com",
+        messagingSenderId: "1093065034241",
+        appId: "1:1093065034241:web:d0b6572d231b623f9b4e00",
+        measurementId: "G-TM2DQRR5TC"
+    };
+
+   
+    firebase.initializeApp(firebaseConfig);
+
+   
+    function populateMealBoxTable() {
+        const mealBoxTableBody = document.getElementById('mealBoxTableBody');
+        mealBoxTableBody.innerHTML = ''; 
+
+   
+        firebase.database().ref('meal_box').once('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                const mealBoxData = childSnapshot.val();
+                const { title, time, price, calories, description, weight, diseases, imageURL } = mealBoxData;
+
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${title}</td>
+                    <td>${time}</td>
+                    <td>${price}</td>
+                    <td>${calories}</td>
+                    <td>${description}</td>
+                    <td>${weight}</td>
+                    <td>${diseases ? diseases.join(', ') : ''}</td>
+                    <td><img src="${imageURL}" alt="Meal Image" style="max-width: 80px; max-height: 80px;"></td>
+                    <td>
+                        <button onclick="editMealBox('${childSnapshot.key}')">Edit</button>
+                        <button onclick="deleteMealBox('${childSnapshot.key}')">Delete</button>
+                    </td>
+                `;
+                mealBoxTableBody.appendChild(row);
+            });
+        });
+    }
+
+    
+    function editMealBox(key) {
+        
+        firebase.database().ref('meal_box/' + key).once('value', (snapshot) => {
+            const mealBoxData = snapshot.val();
+
+            const imageURL = mealBoxData.imageURL
+            
+            document.getElementById('editTitle').value = mealBoxData.title;
+            document.getElementById('editPrice').value = mealBoxData.price;
+            document.getElementById('editCalories').value = mealBoxData.calories;
+            document.getElementById('editDescription').value = mealBoxData.description;
+              document.getElementById('editImage').src = mealBoxData.imageURL;
+
+              console.log(mealBoxData.imageURL+"   ----------imageee");
+           
+            if (mealBoxData.time) {
+                const timeElement = document.querySelector(`input[name="editTime"][value="${mealBoxData.time}"]`);
+                if (timeElement) {
+                    timeElement.checked = true;
+                }
+            }
+
+            
+            if (mealBoxData.weight) {
+                const weightElement = document.querySelector(`input[name="editWeight"][value="${mealBoxData.weight}"]`);
+                if (weightElement) {
+                    weightElement.checked = true;
+                }
+            
+            }
+
+            
+            if (mealBoxData.diseases) {
+                mealBoxData.diseases.forEach(disease => {
+                    const diseaseCheckbox = document.querySelector(`input[name="editDiseases"][value="${disease}"]`);
+                    if (diseaseCheckbox) {
+                        diseaseCheckbox.checked = true;
+                    }
+                });
+            }
+
+           
+            toggleEditDialog();
+
+            
+            document.getElementById('editForm').onsubmit = function(event) {
+                event.preventDefault();
+
+                console.log('updaing');
+
+                
+                const updatedTitle = document.getElementById('editTitle').value;
+                const updatedTime = document.querySelector('input[name="editTime"]:checked') ? document.querySelector('input[name="editTime"]:checked').value : mealBoxData.time;
+                const updatedPrice = document.getElementById('editPrice').value;
+                const updatedCalories = document.getElementById('editCalories').value;
+                const updatedDescription = document.getElementById('editDescription').value;
+                const updatedWeight = document.querySelector('input[name="editWeight"]:checked') ? document.querySelector('input[name="editWeight"]:checked').value : mealBoxData.weight;
+                const updatedDiseases = [...document.querySelectorAll('input[name="editDiseases"]:checked')].map(el => el.value);
+                
+                const file = document.getElementById('editImage').files[0];
+                const mealBoxRef = firebase.database().ref('meal_box/' + key);
+
+                
+
+                if (file) {
+                    console.log('if part');
+
+                    console.log(mealBoxData);
+                    console.log(mealBoxData.imageURL+"------------");
+
+                     if (mealBoxData.imageURL) {
+                        const oldImageRef = firebase.storage().refFromURL(mealBoxData.imageURL);
+                        oldImageRef.delete().catch((error) => {
+                            console.error('Error deleting old image:', error);
+                        });
+                    }
+                    console.log(file.name);
+                    const storageRef = firebase.storage().ref();
+                    const fileRef = storageRef.child(file.name);
+                    fileRef.put(file).then(() => {
+                        fileRef.getDownloadURL().then((url) => {
+                            console.log(url);
+                            const formDaata = {
+                                title: updatedTitle,
+                                time: updatedTime,
+                                price: updatedPrice,
+                                calories: updatedCalories,
+                                description: updatedDescription,
+                                imageURL: url,
+                                weight: updatedWeight,
+                                diseases: updatedDiseases
+                            }
+
+                            console.log(formDaata);
+                            mealBoxRef.update(formDaata).then(() => {
+                                 document.getElementById('editImage').src=''
+                                  document.getElementById('editImage').value=null
+                                toggleEditDialog();
+                                populateMealBoxTable();
+                            });
+                        });
+                    });
+                } else {
+                    console.log('else part');
+                    mealBoxRef.update({
+                        title: updatedTitle,
+                        time: updatedTime,
+                        price: updatedPrice,
+                        calories: updatedCalories,
+                        description: updatedDescription,
+                        weight: updatedWeight,
+                        diseases: updatedDiseases,
+                       
+                    }).then(() => {
+                        document.getElementById('editImage').src=''
+                        document.getElementById('editImage').value=null
+                        toggleEditDialog();
+                        populateMealBoxTable();
+                    });
+                }
+            };
+        });
+    }
+
+    
+    function deleteMealBox(key) {
+
+        firebase.database().ref('meal_box/' + key).remove().then(() => {
+            populateMealBoxTable();
+        });
+    }
+
+    
+    function editDialog() {
+        document.getElementById('editDialog').style.display = 'block';
+    }
+
+    
+    function closeEditDialog() {
+        document.getElementById('editDialog').style.display = 'none';
+    }
+
+    
+    function toggleEditDialog() {
+        const editDialog = document.getElementById('editDialog');
+        if (editDialog.style.display === 'none' || editDialog.style.display === '') {
+            editDialog.style.display = 'block';
+        } else {
+            editDialog.style.display = 'none';
+        }
+    }
+
+    
+    populateMealBoxTable();
+</script>
+
+</body>
+</html>
